@@ -2,8 +2,6 @@
 
 using namespace std;
 
-// 2337310 송하얼 객체 과제 2-1
-
 int main(){
 
     unsigned int sec;
