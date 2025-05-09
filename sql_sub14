@@ -1,0 +1,97 @@
+# n사의 n store를 기반, 가상으로 작성
+
+-- n_member 테이블 [회원 정보]
+CREATE TABLE n_member (
+    member_id INT PRIMARY KEY,          -- 회원 아이디
+    name VARCHAR(50) NOT NULL,          -- 회원 이름
+    email VARCHAR(100) NOT NULL UNIQUE, -- 이메일 (유니크)
+    phone CHAR(10),                     -- 전화번호
+    join_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- 가입 날짜 (기본값: 현재 시간)
+    status CHAR(1) CHECK (status IN ('A', 'B', 'C')) -- 상태 (A: 활성, B: 비활성, C: 탈퇴)
+);
+
+-- n_sales 테이블 [판매 정보]
+CREATE TABLE n_sales (
+    sales_id INT PRIMARY KEY,           -- 판매 아이디
+    member_id INT,                      -- 회원 아이디 (참조: n_member 테이블)
+    product_name VARCHAR(100),          -- 제품 이름
+    sales_amount DECIMAL(5,2),          -- 판매 금액
+    sales_date DATETIME,                -- 판매 날짜
+    CONSTRAINT fk_member FOREIGN KEY (member_id) REFERENCES n_member(member_id) ON DELETE CASCADE
+);
+
+-- n_payment 테이블 [입금 정보]
+CREATE TABLE n_payment (
+    payment_id INT PRIMARY KEY,         -- 입금 아이디
+    member_id INT,                      -- 회원 아이디 (참조: n_member 테이블)
+    payment_amount DECIMAL(5,2),        -- 입금 금액
+    payment_date DATETIME,              -- 입금 날짜
+    CONSTRAINT fk_member_payment FOREIGN KEY (member_id) REFERENCES n_member(member_id)
+);
+
+-- 회원 정보 테이블에 insert
+INSERT INTO n_member (member_id, name, email, phone, join_date, status)
+VALUES
+(1, '김가가', 'kim@naver.com', '0101234567', '2023-01-01', 'A'),
+(2, '이나나', 'leenaver.com', '0102345678', '2023-02-01', 'B'),
+(3, '박다다', 'parknaver.com', '0103456789', '2023-03-01', 'A'),
+(4, '최라라', 'choinaver.com', '0104567890', '2023-04-01', 'C'),
+(5, '정마마', 'jung@naver.com', '0105678901', '2023-05-01', 'A');
+
+-- 판매 정보 테이블에 insert
+INSERT INTO n_sales (sales_id, member_id, product_name, sales_amount, sales_date)
+VALUES
+(1, 1, 'ipone', 150.00, '2023-01-10'),
+(2, 2, 'ipad', 200.00, '2023-02-10'),
+(3, 3, 'airpods', 250.00, '2023-03-10'),
+(4, 4, 'applewatch', 100.00, '2023-04-10'),
+(5, 5, 'macbook', 300.00, '2023-05-10');
+
+-- 입금 정보 테이블에 insert
+INSERT INTO n_payment (payment_id, member_id, payment_amount, payment_date)
+VALUES
+(1, 1, 100.00, '2023-01-15'),
+(2, 2, 150.00, '2023-02-15'),
+(3, 3, 200.00, '2023-03-15'),
+(4, 4, 50.00, '2023-04-15'),
+(5, 5, 250.00, '2023-05-15');
+
+-- 회원 정보 조회
+SELECT * FROM n_member;
+
+-- 판매 정보 조회
+SELECT * FROM n_sales;
+
+-- 입금 정보 조회
+SELECT * FROM n_payment;
+
+-- ------------------------------
+
+-- 외래 키 제약 조건 비활성화
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 기준 테이블의 member_id 변경
+UPDATE n_member 
+SET member_id = 10 
+WHERE member_id = 1;
+
+-- 참조 테이블의 member_id 변경
+UPDATE n_sales 
+SET member_id = 10 
+WHERE member_id = 1;
+
+UPDATE n_payment 
+SET member_id = 10 
+WHERE member_id = 1;
+
+-- 외래 키 제약 조건 활성화
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 변경된 회원 정보 조회
+SELECT * FROM n_member;
+
+-- 변경된 판매 정보 조회
+SELECT * FROM n_sales;
+
+-- 변경된 입금 정보 조회
+SELECT * FROM n_payment;
