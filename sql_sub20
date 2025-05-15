@@ -1,0 +1,7 @@
+-- view part
+
+create or replace view v_customer as
+select customer_id, concat(first_name,' ',last_name) fullname
+from sakila.customer;
+
+update v_customer set fullname='메리 킴' where customer_id=1; -- error
